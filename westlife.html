@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lyrics Display with Music</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Serif', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('sky.jpg') no-repeat center center;
+            background-size: cover;
+            color: white;
+            text-align: center;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .container {
+            padding: 20px;
+            z-index: 10;
+        }
+        h1 {
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+        .lyrics {
+            font-size: 28px;
+            line-height: 1.5;
+            white-space: pre-wrap;
+            opacity: 0;
+            transition: opacity 0.5s;
+        }
+        .lyrics.active {
+            opacity: 1;
+        }
+        .play-button {
+            background-color: #1DB954;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 20px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, background-color 0.3s;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        .play-button:hover {
+            background-color: #17a442;
+            transform: scale(1.05);
+        }
+        .play-button:active {
+            transform: scale(0.95);
+        }
+        .heart {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            transform: rotate(45deg);
+            animation: float 4s linear infinite;
+            opacity: 0.7;
+        }
+        .heart::before,
+        .heart::after {
+            content: "";
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: red;
+            border-radius: 50%;
+        }
+        .heart::before {
+            top: -10px;
+            left: 0;
+        }
+        .heart::after {
+            top: 0;
+            left: -10px;
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(0) rotate(45deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateY(-100vh) rotate(45deg);
+                opacity: 0;
+            }
+        }
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 28px;
+            }
+            .lyrics {
+                font-size: 20px;
+            }
+            .play-button {
+                font-size: 16px;
+                padding: 10px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Lagu buat Olip :V</h1>
+        <button class="play-button" id="playButton">Play Musik</button>
+        <p class="lyrics" id="line1"></p>
+        <audio id="song">
+            <source src="musik.mp3" type="audio/mpeg">
+            Your browser does not support the audio element.
+        </audio>
+    </div>
+
+    <script>
+        const lyricsText = [
+            "So, I say a little prayer",
+            "And hope my dreams will take me there",
+            "Where the skies are blue",
+            "To see you once again, my love",
+            "Overseas, from coast to coast",
+            "To find a place I love the most",
+            "Where the fields are green",
+            "To see you once again........, my love..........."
+        ];
+
+        const delays = [1800, 2000, 1400, 2500, 1500, 1600, 700, 3000];
+        let currentIndex = 0;
+        const lyricsElement = document.getElementById("line1");
+        const song = document.getElementById("song");
+        const playButton = document.getElementById("playButton");
+
+        function typeText(text, callback) {
+            let index = 0;
+            lyricsElement.textContent = "";
+            const interval = setInterval(() => {
+                lyricsElement.textContent += text.charAt(index);
+                index++;
+                if (index === text.length) {
+                    clearInterval(interval);
+                    if (callback) callback();
+                }
+            }, 50); // Kecepatan mengetik (100 ms per karakter)
+        }
+
+        function displayLyrics() {
+            if (currentIndex < lyricsText.length) {
+                lyricsElement.classList.add("active");
+                typeText(lyricsText[currentIndex], () => {
+                    setTimeout(() => {
+                        lyricsElement.classList.remove("active");
+                        currentIndex++;
+                        displayLyrics();
+                    }, delays[currentIndex]);
+                });
+            }
+        }
+
+        // Fungsi untuk membuat partikel hati
+        function createHeart() {
+            const heart = document.createElement("div");
+            heart.classList.add("heart");
+            heart.style.left = Math.random() * 100 + "vw";
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 6000); // Hapus hati setelah 4 detik
+        }
+
+        // Mulai musik, lirik, dan animasi hati saat tombol diklik
+        playButton.addEventListener("click", () => {
+            song.play();
+            displayLyrics();
+            playButton.style.display = "none"; // Sembunyikan tombol setelah diklik
+
+            // Buat partikel hati setiap 500ms
+            setInterval(createHeart, 500);
+        });
+    </script>
+</body>
+</html>
